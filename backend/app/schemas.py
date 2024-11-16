@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 
-class ItemBase(BaseModel):
-    name: str
+class ImageBase(BaseModel):
     description: str
 
-class ItemCreate(ItemBase):
+class ImageCreate(ImageBase):
     pass
 
-class Item(ItemBase):
+class ImageOut(ImageBase):
     id: int
+    filename: str
 
     class Config:
         orm_mode = True

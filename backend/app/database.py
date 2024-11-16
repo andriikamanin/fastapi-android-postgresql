@@ -1,11 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
 
-DATABASE_URL = "postgresql+asyncpg://your_user:your_password@db:5432/your_database"
+DATABASE_URL = "postgresql://image_user:admin@localhost/image_db"
 
-# Создаем базу данных и сессию
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
