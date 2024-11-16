@@ -1,38 +1,44 @@
-from fastapi import FastAPI, UploadFile, File, Form, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from . import models, schemas, database
 import os
-from uuid import uuid4
+from .database import engine
+from .models import Base
+
+# Создание таблиц в базе данных
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Создание таблиц
-models.Base.metadata.create_all(bind=database.engine)
-
+# Монтируем директорию для статических файлов
 UPLOAD_DIR = "static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/static", StaticFiles(directory=UPLOAD_DIR), name="static")
 
-@app.post("/upload/", response_model=schemas.ImageOut)
-async def upload_image(
-    description: str = Form(...),
-    file: UploadFile = File(...),
-    db: Session = Depends(database.get_db)
-):
-    # Сохранение файла
-    file_extension = file.filename.split(".")[-1]
-    filename = f"{uuid4()}.{file_extension}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    
-    with open(file_path, "wb") as buffer:
-        buffer.write(await file.read())
+# Добавляем обработку CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    # Сохранение данных в БД
-    image = models.Image(filename=filename, description=description)
-    db.add(image)
-    db.commit()
-    db.refresh(image)
-    return image
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to FastAPI!"}
 
+# Маршруты для работы с изображениями
 @app.get("/images/", response_model=list[schemas.ImageOut])
 def get_images(db: Session = Depends(database.get_db)):
     return db.query(models.Image).all()
+
+@app.get("/images/{image_id}", response_model=schemas.ImageOut)
+def get_image(image_id: int, db: Session = Depends(database.get_db)):
+    image = db.query(models.Image).filter(models.Image.id == image_id).first()
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    return image
+

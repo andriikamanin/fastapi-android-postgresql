@@ -1,0 +1,11 @@
+--2024-11-16 11:39:07--  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNunF8yuPCggkKdFD2xhA48FX_13l-f5UwBg
+Resolving encrypted-tbn0.gstatic.com (encrypted-tbn0.gstatic.com)... 142.250.186.174, 2a00:1450:4001:811::200e
+Connecting to encrypted-tbn0.gstatic.com (encrypted-tbn0.gstatic.com)|142.250.186.174|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5397 (5.3K) [image/png]
+Saving to: ‘/home/ubuntu/fastapi-android-postgresql/backend/static/uploads/test_image.jpg’
+
+          /home/ubu   0%[                    ]       0  --.-KB/s               /home/ubuntu/fastap 100%[===================>]   5.27K  --.-KB/s    in 0s      
+
+2024-11-16 11:39:07 (21.8 MB/s) - ‘/home/ubuntu/fastapi-android-postgresql/backend/static/uploads/test_image.jpg’ saved [5397/5397]
+
